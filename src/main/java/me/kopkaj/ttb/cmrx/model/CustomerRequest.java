@@ -2,6 +2,9 @@ package me.kopkaj.ttb.cmrx.model;
 
 import java.time.LocalDateTime;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -79,12 +82,14 @@ public class CustomerRequest {
     
     private String notes;
     
-    @Column(name = "created_date")
+    @CreationTimestamp
+    @Column(name = "created_date", updatable = false)
     private LocalDateTime createdDate;
     
+    @UpdateTimestamp
     @Column(name = "last_modified_date")
     private LocalDateTime lastModifiedDate;
     
-    @Column(name = "completion_date")
+    @Column(name = "completion_date", insertable = false, updatable = false)
     private LocalDateTime completionDate;
 }
