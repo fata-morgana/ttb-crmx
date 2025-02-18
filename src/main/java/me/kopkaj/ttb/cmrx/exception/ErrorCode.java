@@ -10,6 +10,9 @@ public interface ErrorCode {
 	String INVALID_ENUM_DESCRIPTION = "D0102";
 	String DATA_MAPPING_FAIL = "D0103";
 	
+	// Criteria
+	String SEARCH_REQUEST_BY_TYPES = "B0001";
+	
 	// Internal System Error
 	String DATABASE_CONNECTION_FAIL = "S0001";
 	String INTERNAL_SERVER_ERROR = "S0002";

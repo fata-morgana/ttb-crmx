@@ -15,7 +15,7 @@ import me.kopkaj.ttb.cmrx.constant.RequestStatus;
 import me.kopkaj.ttb.cmrx.constant.RequestType;
 import me.kopkaj.ttb.cmrx.model.CustomerRequest;
 
-public interface CustomerRequestRepository extends JpaRepository<CustomerRequest, Long> {
+public interface CustomerRequestRepository  extends JpaRepository<CustomerRequest, Long>, JpaSpecificationExecutor<CustomerRequest> {
     List<CustomerRequest> findByStatus(RequestStatus status);
     List<CustomerRequest> findByChannel(RequestChannel channel);
     List<CustomerRequest> findByType(RequestType type);
@@ -32,6 +32,9 @@ public interface CustomerRequestRepository extends JpaRepository<CustomerRequest
     List<CustomerRequest> findByLastModifiedDateBetween(LocalDateTime startDate, LocalDateTime endDate);
     List<CustomerRequest> findByCompletionDateBetween(LocalDateTime startDate, LocalDateTime endDate);
     
+    default List<CustomerRequest> findByRequestCriteria(RequestPriority priority, RequestStatus status, RequestChannel channel, RequestType type) {
+        return findAll(CustomerRequestSpecification.filterByRequestCriteria(priority, status, channel, type));
+    }
     // Partial Update: Modify only allowed fields
     @Modifying
     @Transactional

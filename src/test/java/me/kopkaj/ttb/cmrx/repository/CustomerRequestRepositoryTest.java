@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import static org.mockito.Mockito.when;
@@ -22,6 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,6 +34,7 @@ import me.kopkaj.ttb.cmrx.constant.RequestChannel;
 import me.kopkaj.ttb.cmrx.constant.RequestPriority;
 import me.kopkaj.ttb.cmrx.constant.RequestStatus;
 import me.kopkaj.ttb.cmrx.constant.RequestType;
+import me.kopkaj.ttb.cmrx.exception.CrmxBusinessCriteriaException;
 import me.kopkaj.ttb.cmrx.model.CustomerRequest;
 
 @DataJpaTest
@@ -48,11 +51,10 @@ public class CustomerRequestRepositoryTest {
     @PersistenceContext
     private EntityManager entityManager;
 
-    private CustomerRequest request;
-
     @BeforeEach
     public void setUp() {
-    	request = new CustomerRequest();
+
+        CustomerRequest request = new CustomerRequest();
         request.setCustomerId(1001L);
         request.setCustomerName("Kopkaj Oupapatig");
         request.setCustomerAccountNumber("AcctNo11001100");
@@ -66,6 +68,21 @@ public class CustomerRequestRepositoryTest {
         request.setChannel(RequestChannel.PHONE);
         
         customerRequestRepository.save(request);
+
+        CustomerRequest request2 = new CustomerRequest();
+        request2.setCustomerId(1002L);
+        request2.setCustomerName("Barack Obama");
+        request2.setCustomerAccountNumber("AcctNo22002200");
+        request2.setReferenceNumber("REF-002");
+        request2.setContent("Original content another");
+        request2.setAssignedTo("EMP-200001");
+        request2.setPriority(RequestPriority.HIGH);
+        request2.setStatus(RequestStatus.IN_PROGRESS);
+        request2.setNotes("Changes we need");
+        request2.setType(RequestType.BALANCE_INQUIRY);
+        request2.setChannel(RequestChannel.ONLINE);
+        
+        customerRequestRepository.save(request2);
     }
 
     @Test
@@ -93,6 +110,59 @@ public class CustomerRequestRepositoryTest {
         assertThat(updatedRequest.getStatus()).isEqualTo(RequestStatus.IN_PROGRESS);
         assertThat(updatedRequest.getNotes()).isEqualTo("Updated notes");
         assertThat(updatedRequest.getLastModifiedDate()).isNotNull(); // Auto-set by DB
+    }
+    @Test
+    void testFilterByPriority() {
+        Specification<CustomerRequest> spec = CustomerRequestSpecification.filterByRequestCriteria(
+                RequestPriority.HIGH, null, null, null);
+
+        List<CustomerRequest> results = customerRequestRepository.findAll(spec);
+        assertEquals(1, results.size());
+        assertEquals(RequestPriority.HIGH, results.get(0).getPriority());
+    }
+
+    @Test
+    void testFilterByStatus() {
+        Specification<CustomerRequest> spec = CustomerRequestSpecification.filterByRequestCriteria(
+                null, RequestStatus.IN_PROGRESS, null, null);
+
+        List<CustomerRequest> results = customerRequestRepository.findAll(spec);
+        assertEquals(1, results.size());
+        assertEquals(RequestStatus.IN_PROGRESS, results.get(0).getStatus());
+    }
+
+    @Test
+    void testFilterByChannelAndType() {
+        Specification<CustomerRequest> spec = CustomerRequestSpecification.filterByRequestCriteria(
+                null, null, RequestChannel.PHONE, RequestType.ADDRESS_CHANGE);
+
+        List<CustomerRequest> results = customerRequestRepository.findAll(spec);
+        assertEquals(1, results.size());
+        assertEquals(RequestChannel.PHONE, results.get(0).getChannel());
+        assertEquals(RequestType.ADDRESS_CHANGE, results.get(0).getType());
+    }
+
+    @Test
+    void testFilterWithMultipleCriteria() {
+        Specification<CustomerRequest> spec = CustomerRequestSpecification.filterByRequestCriteria(
+                RequestPriority.MEDIUM, RequestStatus.PENDING, RequestChannel.PHONE, RequestType.ADDRESS_CHANGE);
+
+        List<CustomerRequest> results = customerRequestRepository.findAll(spec);
+        assertEquals(1, results.size());
+        assertEquals(RequestPriority.MEDIUM, results.get(0).getPriority());
+        assertEquals(RequestStatus.PENDING, results.get(0).getStatus());
+    }
+
+    @Test
+    void testNoCriteriaThrowsException() {
+    	Specification<CustomerRequest> spec = CustomerRequestSpecification.filterByRequestCriteria(null, null, null, null);
+        
+        // Ensure findAll() executes the lambda
+        Exception exception = assertThrows(CrmxBusinessCriteriaException.class, () -> 
+          customerRequestRepository.findAll(spec)
+        );
+
+        assertEquals("At least one filter must be provided.", exception.getMessage());
     }
 
     @Test
