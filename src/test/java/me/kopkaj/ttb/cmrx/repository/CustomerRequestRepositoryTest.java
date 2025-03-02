@@ -45,9 +45,6 @@ public class CustomerRequestRepositoryTest {
     @Autowired
     private CustomerRequestRepository customerRequestRepository;
     
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
-    
     @PersistenceContext
     private EntityManager entityManager;
 

@@ -12,6 +12,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.Data;
 import me.kopkaj.ttb.cmrx.constant.RequestChannel;
 import me.kopkaj.ttb.cmrx.constant.RequestPriority;
@@ -20,9 +21,10 @@ import me.kopkaj.ttb.cmrx.constant.RequestType;
 
 @Data
 @Entity
+@Table(name = "customer_request")
 public class CustomerRequest {
 	public CustomerRequest() {
-		// default constructure for JPA
+		// default constructor for JPA
 	}
 
 	public CustomerRequest(Long id, Long customerId, String customerName, String customerAccountNumber, String content,

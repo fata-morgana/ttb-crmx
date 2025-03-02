@@ -1,6 +1,8 @@
 package me.kopkaj.ttb.cmrx.exception;
 
 public class CrmxSystemInternalException extends CrmxSystemException {
+	private static final long serialVersionUID = 6947523526048176876L;
+
 	public CrmxSystemInternalException(String errorCode, String errorMessage) {
         super(errorCode, errorMessage);
     }

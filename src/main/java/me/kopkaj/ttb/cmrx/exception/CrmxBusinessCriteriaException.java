@@ -8,4 +8,7 @@ public class CrmxBusinessCriteriaException extends CrmxBusinessException {
 		super(errorCode, errorMessage);
 	}
 
+    public CrmxBusinessCriteriaException(String errorCode, String errorMessage, Throwable cause) {
+        super(errorCode, errorMessage, cause);
+    }
 }
