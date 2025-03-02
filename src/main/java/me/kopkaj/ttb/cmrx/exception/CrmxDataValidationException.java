@@ -18,4 +18,8 @@ public class CrmxDataValidationException extends CrmxDataException {
     public static CrmxDataValidationException invalidFormat(String field) {
         return new CrmxDataValidationException(ErrorCode.INVALID_FORMAT, "Invalid format for " + field);
     }
+
+    public static CrmxDataValidationException missingConditonRequireFields(String fields) {
+        return new CrmxDataValidationException(ErrorCode.INVALID_FORMAT, "One of these fields must contain value: " + fields);
+    }
 }

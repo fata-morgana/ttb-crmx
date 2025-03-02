@@ -13,6 +13,7 @@ import me.kopkaj.ttb.cmrx.constant.RequestPriority;
 import me.kopkaj.ttb.cmrx.constant.RequestStatus;
 import me.kopkaj.ttb.cmrx.constant.RequestType;
 import me.kopkaj.ttb.cmrx.exception.CrmxBusinessCriteriaException;
+import me.kopkaj.ttb.cmrx.exception.CrmxDataValidationException;
 import me.kopkaj.ttb.cmrx.exception.ErrorCode;
 import me.kopkaj.ttb.cmrx.model.CustomerRequest;
 
@@ -39,7 +40,7 @@ public class CustomerRequestSpecification {
             }
             // Ensure at least one filter is provided
             if (predicates.isEmpty()) {
-                throw new CrmxBusinessCriteriaException(ErrorCode.SEARCH_REQUEST_BY_TYPES, "At least one filter must be provided.");
+            	throw CrmxDataValidationException.missingConditonRequireFields("priority, status, type, channel");
             }
 
             return cb.and(predicates.toArray(new Predicate[0]));

@@ -13,6 +13,10 @@ public interface ErrorCode {
 	// Criteria
 	String SEARCH_REQUEST_BY_TYPES = "B0001";
 	
+	// Condition
+	String CUSTOMER_REQUEST_NOT_FOUND = "B1001";
+	String CUSTOMER_REQUEST_ALREADY_COMPLETED = "B1002";
+	
 	// Internal System Error
 	String DATABASE_CONNECTION_FAIL = "S0001";
 	String INTERNAL_SERVER_ERROR = "S0002";
